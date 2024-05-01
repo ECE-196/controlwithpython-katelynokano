@@ -1,11 +1,11 @@
 from __future__ import annotations
-from threading import Thread, Lock
-from serial import Serial, SerialException
-from serial.tools.list_ports import comports
-
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.messagebox import showerror
+
+from serial import Serial, SerialException
+from serial.tools.list_ports import comports
+from threading import Thread, Lock # we'll use Lock later ;)
 
 S_OK: int = 0xaa
 S_ERR: int = 0xff
@@ -36,7 +36,7 @@ class SerialPortal(tk.Toplevel):
         super().__init__(parent)
         
         self.parent = parent
-        self.parent.withdraw()
+        self.parent.withdraw() # hide App until connected
         
         ttk.OptionMenu(self, parent.port, '', *[d.device for d in comports()]).pack()
         ttk.Button(self, text='Connect', command=self.connect, default='active').pack()
@@ -45,7 +45,8 @@ class SerialPortal(tk.Toplevel):
     def connect(self):
         self.parent.connect()
         self.destroy()
-        self.parent.deiconify()
+        self.parent.deiconify() # reveal App
+
 
 class App(tk.Tk):
     ser: LockedSerial
@@ -95,7 +96,9 @@ class App(tk.Tk):
     
     def __exit__(self, *_):
         self.disconnect()
-        
+
 if __name__ == '__main__':
     with App() as app:
         app.mainloop()
+
+    
